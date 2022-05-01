@@ -9,9 +9,16 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    // MARK: - IBOutlets
+    @IBOutlet weak var treeImageView: UIImageView!
+    @IBOutlet weak var correctWordLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet var letterButtons: [UIButton]!
+    
     var listOfWords = ["buccaneer","swift","glorious","incandescent","bug", "program"]
     let incorrectMovesAllowed = 7
-    
+    var currentGame: Game!
     var totalWins = 0 {
         didSet {
             newRound()
@@ -23,18 +30,12 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBOutlet weak var treeImageView: UIImageView!
-    @IBOutlet weak var correctWordLabel: UILabel!
-    @IBOutlet weak var scoreLabel: UILabel!
-    @IBOutlet var letterButtons: [UIButton]!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         newRound()
     }
     
-    var currentGame: Game!
-    
+    // MARK: - Prime functions
     func enableLetterButtons (_ enable: Bool) {
         for button in letterButtons {
             button.isEnabled = enable
@@ -45,7 +46,7 @@ class ViewController: UIViewController {
         if !listOfWords.isEmpty {
             let newWord = listOfWords.removeFirst()
             currentGame = Game(word: newWord, incorrectMovesRemaining:
-                incorrectMovesAllowed, guessedLetters:[])
+                                incorrectMovesAllowed, guessedLetters:[])
             enableLetterButtons(true)
             updateUI()
         } else {
@@ -67,14 +68,6 @@ class ViewController: UIViewController {
         treeImageView.image = UIImage(named: "Tree \(currentGame.incorrectMovesRemaining)")
     }
     
-    @IBAction func letterButtonPressed(_ sender: UIButton) {
-        sender.isEnabled = false
-        let letterString = sender.title(for: .normal)!
-        let letter = Character(letterString.lowercased())
-        currentGame.playerGuessed(letter: letter)
-        updateGameState()
-    }
-    
     func updateGameState() {
         if currentGame.incorrectMovesRemaining == 0 {
             totalLosses += 1
@@ -83,6 +76,15 @@ class ViewController: UIViewController {
         } else {
             updateUI()
         }
+    }
+    
+    // MARK: - IBActions
+    @IBAction func letterButtonPressed(_ sender: UIButton) {
+        sender.isEnabled = false
+        let letterString = sender.title(for: .normal)!
+        let letter = Character(letterString.lowercased())
+        currentGame.playerGuessed(letter: letter)
+        updateGameState()
     }
 }
 
